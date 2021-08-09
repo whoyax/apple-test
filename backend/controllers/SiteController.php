@@ -1,13 +1,11 @@
 <?php
-
 namespace backend\controllers;
 
-use common\models\LoginForm;
 use Yii;
+use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
-use yii\web\Controller;
-use yii\web\Response;
+use common\models\LoginForm;
 
 /**
  * Site controller
@@ -68,7 +66,7 @@ class SiteController extends Controller
     /**
      * Login action.
      *
-     * @return string|Response
+     * @return string
      */
     public function actionLogin()
     {
@@ -81,19 +79,19 @@ class SiteController extends Controller
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->goBack();
+        } else {
+            $model->password = '';
+
+            return $this->render('login', [
+                'model' => $model,
+            ]);
         }
-
-        $model->password = '';
-
-        return $this->render('login', [
-            'model' => $model,
-        ]);
     }
 
     /**
      * Logout action.
      *
-     * @return Response
+     * @return string
      */
     public function actionLogout()
     {
