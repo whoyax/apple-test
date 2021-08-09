@@ -179,4 +179,33 @@ class Apple
         return $randomTime;
     }
 
+    /**
+     * @param \common\models\Apple $record
+     * @return Apple
+     * @throws \Exception
+     */
+    public static function loadFromRecord(\common\models\Apple $record)
+    {
+        $apple = new static($record->color);
+        $apple->_health = $record->health;
+        $apple->_state = $record->state;
+        $apple->_created = strtotime($record->created_at);
+        $apple->_fallen = strtotime($record->fallen_at);
+
+        return $apple;
+    }
+
+    /**
+     * @param \common\models\Apple $record
+     * @return bool
+     */
+    public function saveToRecord(\common\models\Apple $record)
+    {
+        $record->color = $this->color;
+        $record->health = $this->_health;
+        $record->state = $this->_state;
+        $record->created_at = date('Y-m-d H:i:s', $this->_created);
+        $record->fallen_at =  ($this->_fallen) ? date('Y-m-d H:i:s', $this->_fallen) : null;
+        return $record->save();
+    }
 }

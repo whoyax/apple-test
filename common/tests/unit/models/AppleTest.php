@@ -248,4 +248,55 @@ class AppleTest extends \Codeception\Test\Unit
         $this->expectException(AppleException::class);
         $model->spoil();
     }
+
+    /**
+     * создание и заполнение объекта из ORM
+     */
+    public function testLoadFromRecord()
+    {
+        $time = time();
+        $time2 = $time - 42;
+        $record = new \common\models\Apple([
+            'color' => 'green',
+            'state' => Apple::STATE_ON_GROUND,
+            'health' => 94,
+            'created_at' => date('Y-m-d H:i:s', $time),
+            'fallen_at' => date('Y-m-d H:i:s', $time2)
+        ]);
+
+        $apple = Apple::loadFromRecord($record);
+
+        $this->assertEquals('green', $apple->color);
+        $this->assertEquals(Apple::STATE_ON_GROUND, $apple->getState());
+        $this->assertEquals(0.94, $apple->size);
+        $this->assertEquals($time, $apple->getCreatedDate());
+        $this->assertEquals($time2, $apple->getFallenDate());
+    }
+
+    /**
+     *  Сохранение
+     *
+     * @throws \Exception
+     */
+    public function testSaveToRecord()
+    {
+        $apple = new Apple('green');
+        $apple->fall();
+
+        $record = new \common\models\Apple();
+        $this->assertTrue($apple->saveToRecord($record));
+        $this->assertEmpty($record->getErrors());
+        $this->assertEquals('green', $record->color);
+        $this->assertEquals(Apple::STATE_ON_GROUND, $record->state);
+        $this->assertEquals($apple->getCreatedDate(), strtotime($record->created_at));
+        $this->assertEquals($apple->getFallenDate(), strtotime($record->fallen_at));
+        $this->assertEquals($apple->size * 100, $record->health);
+
+        $record = \common\models\Apple::findOne($record->id);
+        $this->assertEquals('green', $record->color);
+        $this->assertEquals(Apple::STATE_ON_GROUND, $record->state);
+        $this->assertEquals($apple->getCreatedDate(), strtotime($record->created_at));
+        $this->assertEquals($apple->getFallenDate(), strtotime($record->fallen_at));
+        $this->assertEquals($apple->size * 100, $record->health);
+    }
 }
