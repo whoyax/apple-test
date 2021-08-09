@@ -37,4 +37,11 @@ class AppleQuery extends \yii\db\ActiveQuery
     {
         return $this->andWhere(['state' => Apple::STATE_ON_GROUND]);
     }
+
+    public function moreFiveHoursOnGround()
+    {
+         $fiveHours = 60 * 60 * 5;
+        return $this->onGround()
+            ->andWhere('(NOW() - fallen_at) > ' . $fiveHours);
+    }
 }
