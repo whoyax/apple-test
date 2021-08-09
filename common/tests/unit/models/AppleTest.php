@@ -250,6 +250,37 @@ class AppleTest extends \Codeception\Test\Unit
     }
 
     /**
+     * Целое яблоко нельзя удалить
+     *
+     * @throws \Exception
+     */
+    public function testFullAppleDelete()
+    {
+        $model = new Apple('green');
+        $model->fall();
+
+        $this->expectException(AppleException::class);
+        $model->delete();
+    }
+
+
+    /**
+     * Недоеденное яблоко нельзя удалить
+     *
+     * @throws \Exception
+     */
+    public function testLiveAppleDelete()
+    {
+        $model = new Apple('green');
+        $model->fall();
+        $model->eat(50);
+
+        $this->expectException(AppleException::class);
+        $model->delete();
+    }
+
+
+    /**
      * создание и заполнение объекта из ORM
      */
     public function testLoadFromRecord()
